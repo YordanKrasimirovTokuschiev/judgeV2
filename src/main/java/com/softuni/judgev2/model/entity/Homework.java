@@ -1,10 +1,8 @@
 package com.softuni.judgev2.model.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "homeworks")
@@ -14,13 +12,16 @@ public class Homework extends BaseEntity {
     private LocalDateTime addedOn;
 
     @Column(name = "git_address", nullable = false)
-    public String gitAddress;
+    private String gitAddress;
 
     @ManyToOne
-    public User author;
+    private User author;
 
     @ManyToOne
-    public Exercise exercise;
+    private Exercise exercise;
+
+    @OneToMany(mappedBy = "homework", fetch = FetchType.EAGER)
+    private Set<Comment> comments;
 
     public Homework() {
     }
@@ -55,5 +56,13 @@ public class Homework extends BaseEntity {
 
     public void setExercise(Exercise exercise) {
         this.exercise = exercise;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
     }
 }

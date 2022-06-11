@@ -1,9 +1,7 @@
 package com.softuni.judgev2.model.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +21,9 @@ public class User extends BaseEntity {
 
     @ManyToOne
     private Role role;
+
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
+    private Set<Homework> homeworkSet;
 
     public User() {
     }
@@ -65,5 +66,13 @@ public class User extends BaseEntity {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Set<Homework> getHomeworkSet() {
+        return homeworkSet;
+    }
+
+    public void setHomeworkSet(Set<Homework> homeworkSet) {
+        this.homeworkSet = homeworkSet;
     }
 }

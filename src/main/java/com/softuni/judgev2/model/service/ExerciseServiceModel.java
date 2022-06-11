@@ -1,24 +1,23 @@
-package com.softuni.judgev2.model.entity;
+package com.softuni.judgev2.model.service;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "exercises")
-public class Exercise extends BaseEntity {
+public class ExerciseServiceModel {
 
-    @Column(name = "name", unique = true, nullable = false)
+    private Long id;
     private String name;
-
-    @Column(name = "started_on", nullable = false)
     private LocalDateTime startedOn;
-
-    @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
 
-    public Exercise() {
+    public ExerciseServiceModel() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

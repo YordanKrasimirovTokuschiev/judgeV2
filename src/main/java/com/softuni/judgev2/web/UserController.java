@@ -3,15 +3,13 @@ package com.softuni.judgev2.web;
 import com.softuni.judgev2.model.binding.UserLoginBindingModel;
 import com.softuni.judgev2.model.binding.UserRegisterBindingModel;
 import com.softuni.judgev2.model.service.UserServiceModel;
+import com.softuni.judgev2.security.CurrentUser;
 import com.softuni.judgev2.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
@@ -22,10 +20,12 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final CurrentUser currentUser;
     private final ModelMapper modelMapper;
 
-    public UserController(UserService userService, ModelMapper modelMapper) {
+    public UserController(UserService userService, CurrentUser currentUser, ModelMapper modelMapper) {
         this.userService = userService;
+        this.currentUser = currentUser;
         this.modelMapper = modelMapper;
     }
 
@@ -52,17 +52,18 @@ public class UserController {
             return "redirect:login";
         }
 
-        UserServiceModel userServiceModel = userService.findUserByUsernameAndPassword(userLoginBindingModel.getUsername(),
+        UserServiceModel user = userService.findUserByUsernameAndPassword(userLoginBindingModel.getUsername(),
                 userLoginBindingModel.getPassword());
 
-        if (userServiceModel == null) {
+        if (user == null) {
             redirectAttributes.addFlashAttribute("userLoginBindingModel", userLoginBindingModel);
             redirectAttributes.addFlashAttribute("notFound", true);
 
             return "redirect:login";
         }
 
-        httpSession.setAttribute("userServiceModel", userServiceModel);
+        //   httpSession.setAttribute("userServiceModel", userServiceModel);
+        userService.login(user);
 
         return "redirect:/";
     }
@@ -96,5 +97,24 @@ public class UserController {
         userService.registerUser(userServiceModel);
 
         return "redirect:login";
+    }
+
+    @GetMapping("/logout")
+    public String logout() {
+        userService.logout();
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/profile/{id}")
+    public String profile(@PathVariable Long id, Model model) {
+
+        if (currentUser.isAnonymous()) {
+            return "redirect:/users/login";
+        }
+
+        model.addAttribute("user", userService.findProfileById(id));
+
+        return "profile";
     }
 }
